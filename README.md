@@ -7,6 +7,12 @@
 [![Quality Score][ico-code-quality]][link-code-quality]
 [![Total Downloads][ico-downloads]][link-downloads]
 
+## DEPRECATED
+
+**This extension has been deprecated**.  All of its functionality now exists in [`league/commonmark`][link-league-commonmark] 1.3+ under the `League\CommonMark\Extension\ExternalLink` namespace, so you should upgrade to that version and use that bundled extension instead of this one.
+
+## Overview
+
 This extension to the [`league/commonmark` PHP Markdown parser][link-league-commonmark] can detect links to external sites and adjust the markup accordingly:
 
  - Adds a `rel="noopener noreferrer"` attribute

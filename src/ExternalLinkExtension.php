@@ -12,13 +12,24 @@
 namespace League\CommonMark\Ext\ExternalLink;
 
 use League\CommonMark\ConfigurableEnvironmentInterface;
-use League\CommonMark\Event\DocumentParsedEvent;
 use League\CommonMark\Extension\ExtensionInterface;
+use League\CommonMark\Extension\ExternalLink\ExternalLinkExtension as CoreExtension;
 
+/**
+ * @deprecated The league/commonmark-ext-external-link extension is now deprecated. All functionality has been moved into league/commonmark 1.3+, so use that instead.
+ */
 final class ExternalLinkExtension implements ExtensionInterface
 {
+    private $coreExtension;
+
+    public function __construct()
+    {
+        @trigger_error(sprintf('league/commonmark-ext-external-link is deprecated; use %s from league/commonmark 1.3+ instead', CoreExtension::class), E_USER_DEPRECATED);
+        $this->coreExtension = new CoreExtension();
+    }
+
     public function register(ConfigurableEnvironmentInterface $environment)
     {
-        $environment->addEventListener(DocumentParsedEvent::class, new ExternalLinkProcessor($environment));
+        $this->coreExtension->register($environment);
     }
 }

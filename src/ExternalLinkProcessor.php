@@ -13,19 +13,22 @@ namespace League\CommonMark\Ext\ExternalLink;
 
 use League\CommonMark\EnvironmentInterface;
 use League\CommonMark\Event\DocumentParsedEvent;
-use League\CommonMark\Inline\Element\Link;
+use League\CommonMark\Extension\ExternalLink\ExternalLinkProcessor as CoreProcessor;
 
+/**
+ * @deprecated The league/commonmark-ext-external-link extension is now deprecated. All functionality has been moved into league/commonmark 1.3+, so use that instead.
+ */
 final class ExternalLinkProcessor
 {
-    /** @var EnvironmentInterface */
-    private $environment;
+    private $coreProcessor;
 
     /**
      * @param EnvironmentInterface $environment
      */
     public function __construct(EnvironmentInterface $environment)
     {
-        $this->environment = $environment;
+        @trigger_error(sprintf('league/commonmark-ext-external-link is deprecated; use %s from league/commonmark 1.3+ instead', CoreProcessor::class), E_USER_DEPRECATED);
+        $this->coreProcessor = new CoreProcessor($environment);
     }
 
     /**
@@ -33,51 +36,7 @@ final class ExternalLinkProcessor
      */
     public function __invoke(DocumentParsedEvent $e)
     {
-        $internalHosts = $this->environment->getConfig('external_link/internal_hosts', []);
-        $openInNewWindow = $this->environment->getConfig('external_link/open_in_new_window', false);
-        $classes = $this->environment->getConfig('external_link/html_class', '');
-
-        $walker = $e->getDocument()->walker();
-        while ($event = $walker->next()) {
-            if ($event->isEntering() && $event->getNode() instanceof Link) {
-                /** @var Link $link */
-                $link = $event->getNode();
-
-                $host = parse_url($link->getUrl(), PHP_URL_HOST);
-                if (empty($host)) {
-                    // Something is terribly wrong with this URL
-                    continue;
-                }
-
-                if (self::hostMatches($host, $internalHosts)) {
-                    $link->data['external'] = false;
-                    continue;
-                }
-
-                // Host does not match our list
-                $this->markLinkAsExternal($link, $openInNewWindow, $classes);
-            }
-        }
-    }
-
-    /**
-     * @param Link   $link
-     * @param bool   $openInNewWindow
-     * @param string $classes
-     */
-    private function markLinkAsExternal(Link $link, bool $openInNewWindow, string $classes): void
-    {
-        $link->data['external'] = true;
-        $link->data['attributes'] = $link->getData('attributes', []);
-        $link->data['attributes']['rel'] = 'noopener noreferrer';
-
-        if ($openInNewWindow) {
-            $link->data['attributes']['target'] = '_blank';
-        }
-
-        if (!empty($classes)) {
-            $link->data['attributes']['class'] = trim(($link->data['attributes']['class'] ?? '') . ' ' . $classes);
-        }
+        $this->coreProcessor->__invoke($e);
     }
 
     /**
@@ -90,16 +49,8 @@ final class ExternalLinkProcessor
      */
     public static function hostMatches(string $host, $compareTo)
     {
-        foreach ((array) $compareTo as $c) {
-            if (strpos($c, '/') === 0) {
-                if (preg_match($c, $host)) {
-                    return true;
-                }
-            } elseif ($c === $host) {
-                return true;
-            }
-        }
+        @trigger_error(sprintf('league/commonmark-ext-external-link is deprecated; use %s from league/commonmark 1.3+ instead', CoreProcessor::class), E_USER_DEPRECATED);
 
-        return false;
+        return CoreProcessor::hostMatches($host, $compareTo);
     }
 }
